@@ -32,7 +32,7 @@ python export_deployment_bundle.py \
 
 ## 2. Instal dependensi
 
-Disarankan memakai Python 3.10 atau 3.11.
+Gunakan **Python 3.12**. Versi ini kompatibel dengan TensorFlow 2.21.0 dan harus dipilih saat membuat ulang aplikasi di Streamlit Community Cloud.
 
 ```bash
 python -m venv .venv
@@ -75,17 +75,10 @@ sample_input.csv
 artifacts/
 ```
 
+## Deployment Streamlit Community Cloud
+
+Log deployment lama menggunakan Python 3.14.6, yang belum didukung TensorFlow 2.21.0. Aplikasi harus dihapus lalu dibuat ulang melalui **Advanced settings** dengan **Python 3.12**. Instruksi lengkap tersedia di `DEPLOY_STREAMLIT_CLOUD.md`.
+
 ## Catatan kompatibilitas
 
 `custom_layers.py` menyertakan implementasi `MultiHeadSelfAttention`, `TransformerBlock`, dan `TokenAndPositionEmbedding`, sehingga model Transformer dari notebook dapat dimuat. Notebook `STREAMLIT_READY` juga menambahkan `get_config()` pada `TransformerBlock` agar serialisasi Keras lebih stabil.
-
-## Menjalankan dengan Docker
-
-Setelah artefak model ditempatkan di `artifacts/`:
-
-```bash
-docker build -t peer-feedback-classifier .
-docker run --rm -p 8501:8501 peer-feedback-classifier
-```
-
-Buka `http://localhost:8501` pada browser.

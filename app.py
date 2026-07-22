@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import io
 import os
+import platform
 from pathlib import Path
+
+# Reduce TensorFlow startup noise before TensorFlow is imported lazily.
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
 import pandas as pd
 import streamlit as st
@@ -68,6 +72,7 @@ missing = missing_artifacts(MODEL_DIR, config)
 with st.sidebar:
     st.header("Model")
     st.caption(f"Folder artefak: `{MODEL_DIR}`")
+    st.caption(f"Python: `{platform.python_version()}`")
     st.write(f"**Nama model:** {config.model_name}")
     st.write(f"**Maksimum token:** {config.max_len}")
     st.write("**Urutan prioritas target:**")
