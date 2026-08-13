@@ -10,6 +10,7 @@ os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
 
 import pandas as pd
 import streamlit as st
+from PIL import Image
 
 from model_runtime import (
     basic_clean,
@@ -27,6 +28,10 @@ APP_DESCRIPTION = (
     "umpan balik sejawat (peer feedback) berbahasa Indonesia secara otomatis."
 )
 
+APP_DIR = Path(__file__).resolve().parent
+APP_ICON_PATH = APP_DIR / "slat_pf_id_icon.png"
+APP_ICON = Image.open(APP_ICON_PATH) if APP_ICON_PATH.exists() else "🏷️"
+
 LABEL_DESCRIPTIONS = {
     "Appreciation": "Umpan balik yang menyampaikan apresiasi atau penilaian positif.",
     "Problem": "Umpan balik yang mengidentifikasi masalah, kekurangan, atau bagian yang perlu diperbaiki.",
@@ -37,7 +42,7 @@ LABEL_DESCRIPTIONS = {
 
 st.set_page_config(
     page_title=f"{APP_NAME} | Peer Feedback Analytics",
-    page_icon="📝",
+    page_icon=APP_ICON,
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -45,9 +50,22 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .block-container {padding-top: 1.7rem; padding-bottom: 3rem;}
-    .app-title {font-size: 2rem; font-weight: 750; margin-bottom: .15rem;}
+    .block-container {padding-top: 2.4rem; padding-bottom: 3rem;}
+    .app-title {
+        font-size: 2rem;
+        font-weight: 750;
+        line-height: 1.35;
+        padding-top: .12rem;
+        margin: 0 0 .15rem 0;
+        overflow: visible;
+    }
     .app-full-name {font-size: 1.05rem; font-weight: 600; color: #39424e; margin-bottom: .35rem;}
+    .header-icon-wrap {
+        padding-top: .15rem;
+        display: flex;
+        align-items: flex-start;
+        justify-content: center;
+    }
     .app-subtitle {color: #59636e; margin-bottom: 1rem;}
     .app-note {
         border: 1px solid #e6e9ed;
@@ -83,9 +101,18 @@ def score_table(row: pd.Series) -> pd.DataFrame:
     return pd.DataFrame(values).sort_values("Probability", ascending=False)
 
 
-st.markdown(f'<div class="app-title">{APP_NAME}</div>', unsafe_allow_html=True)
-st.markdown(f'<div class="app-full-name">{APP_FULL_NAME}</div>', unsafe_allow_html=True)
-st.markdown(f'<div class="app-subtitle">{APP_DESCRIPTION}</div>', unsafe_allow_html=True)
+header_icon_col, header_text_col = st.columns([0.8, 8], gap="small")
+
+with header_icon_col:
+    if APP_ICON_PATH.exists():
+        st.image(str(APP_ICON_PATH), width=86)
+    else:
+        st.markdown("<div style='font-size:3rem; line-height:1;'>🏷️</div>", unsafe_allow_html=True)
+
+with header_text_col:
+    st.markdown(f'<div class="app-title">{APP_NAME}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="app-full-name">{APP_FULL_NAME}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="app-subtitle">{APP_DESCRIPTION}</div>', unsafe_allow_html=True)
 
 st.markdown(
     """
@@ -103,6 +130,8 @@ config = read_deployment_config(MODEL_DIR)
 missing = missing_artifacts(MODEL_DIR, config)
 
 with st.sidebar:
+    if APP_ICON_PATH.exists():
+        st.image(str(APP_ICON_PATH), width=72)
     st.header(APP_NAME)
     st.caption(APP_FULL_NAME)
     st.divider()
