@@ -21,7 +21,7 @@ from model_runtime import (
 
 
 st.set_page_config(
-    page_title="SLaT-PF-ID | Semantic Label Transformation for Peer Feedback",
+    page_title="Peer Feedback Classifier",
     page_icon="📝",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -60,18 +60,9 @@ def score_table(row: pd.Series) -> pd.DataFrame:
     return pd.DataFrame(values).sort_values("Probability", ascending=False)
 
 
-st.markdown('<div class="app-title">SLaT-PF-ID</div>', unsafe_allow_html=True)
+st.markdown('<div class="app-title">Peer Feedback Classification</div>', unsafe_allow_html=True)
 st.markdown(
-    '''
-    <div class="app-subtitle">
-        <b>Semantic Label Transformation for Peer Feedback in Indonesian Language</b><br>
-        Aplikasi berbasis kecerdasan artifisial untuk menganalisis dan mengklasifikasikan
-        umpan balik sejawat (<i>peer feedback</i>) berbahasa Indonesia secara otomatis.
-        SLaT-PF-ID menerapkan pendekatan <i>Semantic Label Transformation</i> untuk
-        memetakan informasi semantik dalam komentar mahasiswa ke dalam kategori
-        <b>Appreciation</b>, <b>Problem</b>, <b>Suggestion</b>, dan <b>Neutral</b>.
-    </div>
-    ''',
+    '<div class="app-subtitle">Implementasi model deep learning dari notebook klasifikasi komentar peer review.</div>',
     unsafe_allow_html=True,
 )
 
@@ -88,9 +79,8 @@ with st.sidebar:
     st.caption(" > ".join(config.priority_order))
     st.divider()
     st.caption(
-        "SLaT-PF-ID memprediksi satu label akhir untuk setiap komentar peer feedback. "
-        "Data multi-label ditransformasikan menjadi representasi single-label menggunakan "
-        "pendekatan Semantic Label Transformation berdasarkan urutan prioritas di atas."
+        "Model ini memprediksi satu label akhir. Data latih awalnya multi-label, lalu diubah "
+        "menjadi single-label menggunakan urutan prioritas di atas."
     )
 
 if missing:
@@ -107,12 +97,12 @@ except Exception as exc:
     st.exception(exc)
     st.stop()
 
-single_tab, batch_tab, info_tab = st.tabs(["Analisis Teks", "Analisis CSV", "Informasi SLaT-PF-ID"])
+single_tab, batch_tab, info_tab = st.tabs(["Prediksi Teks", "Prediksi CSV", "Informasi Model"])
 
 with single_tab:
     example_text = "Penjelasannya sudah baik, tetapi bagian evaluasi masih kurang mendalam dan perlu ditambahkan contoh."
     text = st.text_area(
-        "Masukkan komentar peer feedback berbahasa Indonesia",
+        "Masukkan komentar peer review",
         value="",
         placeholder=example_text,
         height=150,
@@ -206,28 +196,13 @@ with batch_tab:
         st.download_button(
             "Unduh hasil CSV",
             data=to_csv_bytes(predictions),
-            file_name="slat_pf_id_predictions.csv",
+            file_name="peer_feedback_predictions.csv",
             mime="text/csv",
             type="primary",
         )
 
 with info_tab:
-    st.subheader("Tentang SLaT-PF-ID")
-    st.markdown(
-        """
-        **SLaT-PF-ID (Semantic Label Transformation for Peer Feedback in Indonesian Language)**
-        adalah aplikasi berbasis kecerdasan artifisial yang dikembangkan untuk membantu
-        dosen dan peneliti menganalisis komentar *peer feedback* berbahasa Indonesia.
-
-        Aplikasi ini mengklasifikasikan komentar ke dalam kategori **Appreciation, Problem,
-        Suggestion,** dan **Neutral**. Hasil analisis dimaksudkan sebagai informasi pendukung
-        untuk memahami pola dan karakteristik umpan balik mahasiswa, bukan untuk menggantikan
-        penilaian akademik dosen.
-        """
-    )
-    st.divider()
-
-    st.subheader("Konfigurasi SLaT-PF-ID")
+    st.subheader("Konfigurasi deployment")
     info = {
         "Model": config.model_name,
         "Task": config.task_type,
