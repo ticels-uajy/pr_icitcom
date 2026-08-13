@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import io
 import os
 import platform
@@ -29,8 +30,9 @@ APP_DESCRIPTION = (
 )
 
 APP_DIR = Path(__file__).resolve().parent
-APP_ICON_PATH = APP_DIR / "slat_pf_id_icon.png"
-APP_ICON = Image.open(APP_ICON_PATH) if APP_ICON_PATH.exists() else "🏷️"
+APP_LOGO_PATH = APP_DIR / "slat_pf_id_header_logo.png"
+APP_PAGE_ICON_PATH = APP_DIR / "slat_pf_id_page_icon.png"
+APP_ICON = Image.open(APP_PAGE_ICON_PATH) if APP_PAGE_ICON_PATH.exists() else "🏷️"
 
 LABEL_DESCRIPTIONS = {
     "Appreciation": "Umpan balik yang menyampaikan apresiasi atau penilaian positif.",
@@ -50,7 +52,7 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .block-container {padding-top: 2.4rem; padding-bottom: 3rem;}
+    .block-container {padding-top: 1.5rem; padding-bottom: 3rem;}
     .app-title {
         font-size: 2rem;
         font-weight: 750;
@@ -60,13 +62,45 @@ st.markdown(
         overflow: visible;
     }
     .app-full-name {font-size: 1.05rem; font-weight: 600; color: #39424e; margin-bottom: .35rem;}
-    .header-icon-wrap {
-        padding-top: .15rem;
+    .app-logo-wrap {
+        margin: 0 auto .85rem auto;
         display: flex;
-        align-items: flex-start;
         justify-content: center;
     }
+    .app-logo-box {
+        width: 100%;
+        max-width: 980px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .app-logo-box img {
+        width: 100%;
+        max-width: 860px;
+        height: auto;
+        display: block;
+    }
     .app-subtitle {color: #59636e; margin-bottom: 1rem;}
+    @media (max-width: 992px) {
+        .app-logo-box {
+            max-width: 92vw;
+        }
+        .app-logo-box img {
+            max-width: 92vw;
+        }
+    }
+    @media (max-width: 640px) {
+        .block-container {padding-top: 1rem; padding-bottom: 2rem;}
+        .app-logo-wrap {
+            margin: 0 auto .6rem auto;
+        }
+        .app-logo-box {
+            max-width: 96vw;
+        }
+        .app-logo-box img {
+            max-width: 96vw;
+        }
+    }
     .app-note {
         border: 1px solid #e6e9ed;
         border-radius: 12px;
@@ -101,16 +135,24 @@ def score_table(row: pd.Series) -> pd.DataFrame:
     return pd.DataFrame(values).sort_values("Probability", ascending=False)
 
 
-header_icon_col, header_text_col = st.columns([0.8, 8], gap="small")
+def render_responsive_logo(image_path: Path):
+    if image_path.exists():
+        encoded = base64.b64encode(image_path.read_bytes()).decode("utf-8")
+        st.markdown(
+            f'''
+            <div class="app-logo-wrap">
+                <div class="app-logo-box">
+                    <img src="data:image/png;base64,{encoded}" alt="{APP_NAME} logo">
+                </div>
+            </div>
+            ''',
+            unsafe_allow_html=True,
+        )
 
-with header_icon_col:
-    if APP_ICON_PATH.exists():
-        st.image(str(APP_ICON_PATH), width=86)
-    else:
-        st.markdown("<div style='font-size:3rem; line-height:1;'>🏷️</div>", unsafe_allow_html=True)
 
-with header_text_col:
-    st.markdown(f'<div class="app-title">{APP_NAME}</div>', unsafe_allow_html=True)
+if APP_LOGO_PATH.exists():
+    render_responsive_logo(APP_LOGO_PATH)
+else:
     st.markdown(f'<div class="app-full-name">{APP_FULL_NAME}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="app-subtitle">{APP_DESCRIPTION}</div>', unsafe_allow_html=True)
 
@@ -130,8 +172,8 @@ config = read_deployment_config(MODEL_DIR)
 missing = missing_artifacts(MODEL_DIR, config)
 
 with st.sidebar:
-    if APP_ICON_PATH.exists():
-        st.image(str(APP_ICON_PATH), width=72)
+    if APP_PAGE_ICON_PATH.exists():
+        st.image(str(APP_PAGE_ICON_PATH), width=72)
     st.header(APP_NAME)
     st.caption(APP_FULL_NAME)
     st.divider()
