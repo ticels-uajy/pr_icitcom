@@ -148,8 +148,6 @@ config = read_deployment_config(MODEL_DIR)
 missing = missing_artifacts(MODEL_DIR, config)
 
 with st.sidebar:
-    if APP_PAGE_ICON_PATH.exists():
-        st.image(str(APP_PAGE_ICON_PATH), width=72)
     st.header(APP_NAME)
     st.caption(APP_FULL_NAME)
     st.divider()
