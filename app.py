@@ -21,8 +21,8 @@ from model_runtime import (
 
 
 st.set_page_config(
-    page_title="SLaT-PF-ID | Semantic Label Transformation for Peer Feedback",
-    page_icon="📝",
+    page_title="SLaT-PF-ID | Semantic Label Transformation for Peer Feedback in Indonesian Language",
+    page_icon="🏷️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -31,8 +31,36 @@ st.markdown(
     """
     <style>
     .block-container {padding-top: 1.7rem; padding-bottom: 3rem;}
-    .app-title {font-size: 2rem; font-weight: 750; margin-bottom: .2rem;}
-    .app-subtitle {color: #59636e; margin-bottom: 1.25rem;}
+    .app-header {
+        display: flex;
+        align-items: center;
+        gap: .8rem;
+        margin-top: .35rem;
+        margin-bottom: .35rem;
+    }
+    .app-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        border-radius: 12px;
+        border: 1px solid #dfe4ea;
+        background: #f6f8fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.45rem;
+        line-height: 1;
+    }
+    .app-title {
+        font-size: 2rem;
+        font-weight: 750;
+        line-height: 1.25;
+        padding-top: .12rem;
+        padding-bottom: .08rem;
+        margin: 0;
+        overflow: visible;
+    }
+    .app-subtitle {color: #59636e; margin-top: .25rem; margin-bottom: 1.25rem;}
     .label-card {border: 1px solid #e6e9ed; border-radius: 12px; padding: 1rem; background: #fafbfc;}
     div[data-testid="stMetric"] {border: 1px solid #eceff2; padding: .75rem; border-radius: 10px;}
     </style>
@@ -60,7 +88,15 @@ def score_table(row: pd.Series) -> pd.DataFrame:
     return pd.DataFrame(values).sort_values("Probability", ascending=False)
 
 
-st.markdown('<div class="app-title">SLaT-PF-ID</div>', unsafe_allow_html=True)
+st.markdown(
+    '''
+    <div class="app-header">
+        <div class="app-icon" title="SLaT-PF-ID">🏷️</div>
+        <div class="app-title">SLaT-PF-ID</div>
+    </div>
+    ''',
+    unsafe_allow_html=True,
+)
 st.markdown(
     '''
     <div class="app-subtitle">
