@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import base64
 import io
 import os
 import platform
@@ -62,44 +61,17 @@ st.markdown(
         overflow: visible;
     }
     .app-full-name {font-size: 1.05rem; font-weight: 600; color: #39424e; margin-bottom: .35rem;}
-    .app-logo-wrap {
-        margin: 0 auto .85rem auto;
-        display: flex;
-        justify-content: center;
-    }
-    .app-logo-box {
-        width: 100%;
-        max-width: 980px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .app-logo-box img {
-        width: 100%;
-        max-width: 860px;
-        height: auto;
-        display: block;
-    }
     .app-subtitle {color: #59636e; margin-bottom: 1rem;}
-    @media (max-width: 992px) {
-        .app-logo-box {
-            max-width: 92vw;
-        }
-        .app-logo-box img {
-            max-width: 92vw;
-        }
+    div[data-testid="stImage"] {
+        margin-top: .15rem;
+        margin-bottom: .6rem;
+    }
+    div[data-testid="stImage"] img {
+        height: auto;
+        object-fit: contain;
     }
     @media (max-width: 640px) {
         .block-container {padding-top: 1rem; padding-bottom: 2rem;}
-        .app-logo-wrap {
-            margin: 0 auto .6rem auto;
-        }
-        .app-logo-box {
-            max-width: 96vw;
-        }
-        .app-logo-box img {
-            max-width: 96vw;
-        }
     }
     .app-note {
         border: 1px solid #e6e9ed;
@@ -136,23 +108,27 @@ def score_table(row: pd.Series) -> pd.DataFrame:
 
 
 def render_responsive_logo(image_path: Path):
-    if image_path.exists():
-        encoded = base64.b64encode(image_path.read_bytes()).decode("utf-8")
-        st.markdown(
-            f'''
-            <div class="app-logo-wrap">
-                <div class="app-logo-box">
-                    <img src="data:image/png;base64,{encoded}" alt="{APP_NAME} logo">
-                </div>
-            </div>
-            ''',
-            unsafe_allow_html=True,
+    """Render header logo using Streamlit's native image component."""
+    if not image_path.exists():
+        return False
+
+    # Center the logo on desktop while allowing it to shrink naturally on mobile.
+    left_spacer, logo_col, right_spacer = st.columns([1, 8, 1])
+    with logo_col:
+        st.image(
+            str(image_path),
+            use_container_width=True,
         )
+    return True
 
 
-if APP_LOGO_PATH.exists():
-    render_responsive_logo(APP_LOGO_PATH)
-else:
+logo_rendered = render_responsive_logo(APP_LOGO_PATH)
+
+if not logo_rendered:
+    st.warning(
+        f"Logo aplikasi tidak ditemukan di: {APP_LOGO_PATH.name}. "
+        "Pastikan file logo berada pada folder yang sama dengan app.py."
+    )
     st.markdown(f'<div class="app-full-name">{APP_FULL_NAME}</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="app-subtitle">{APP_DESCRIPTION}</div>', unsafe_allow_html=True)
 
